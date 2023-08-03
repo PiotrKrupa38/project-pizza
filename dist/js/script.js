@@ -119,25 +119,25 @@ const select = {
 
     getElements(){
       const thisProduct = this;
-      //thisProduct.dom = {};
+      thisProduct.dom = {};
     
-      thisProduct.accordionTrigger = thisProduct.element.querySelector(select.menuProduct.clickable);
+      thisProduct.dom.accordionTrigger = thisProduct.element.querySelector(select.menuProduct.clickable);
       thisProduct.form = thisProduct.element.querySelector(select.menuProduct.form);
       thisProduct.formInputs = thisProduct.form.querySelectorAll(select.all.formInputs);
-      thisProduct.cartButton = thisProduct.element.querySelector(select.menuProduct.cartButton);
-      thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem);
-      thisProduct.imageWrapper = thisProduct.element.querySelector(select.menuProduct.imageWrapper);
-      thisProduct.amountWidgetElem = thisProduct.element.querySelector(select.menuProduct.amountWidget);
+      thisProduct.dom.cartButton = thisProduct.element.querySelector(select.menuProduct.cartButton);
+      thisProduct.dom.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem);
+      thisProduct.dom.imageWrapper = thisProduct.element.querySelector(select.menuProduct.imageWrapper);
+      thisProduct.dom.amountWidgetElem = thisProduct.element.querySelector(select.menuProduct.amountWidget);
     }
 
     initAccordion(){
       const thisProduct = this;
   
       /* find the clickable trigger (the element that should react to clicking) */
-      const clickableTrigger = thisProduct.element.querySelector(select.menuProduct.clickable);
+      //const clickableTrigger = thisProduct.element.querySelector(select.menuProduct.clickable);
   
       /* START: add event listener to clickable trigger on event click */
-      clickableTrigger.addEventListener('click', function(event) {
+      thisProduct.dom.accordionTrigger.addEventListener('click', function(event) {
       /* prevent default action for event */
         event.preventDefault();
       /* find active product (product that has active class) */
@@ -169,7 +169,7 @@ const select = {
         });
       }
       
-      thisProduct.cartButton.addEventListener('click', function(event){
+      thisProduct.dom.cartButton.addEventListener('click', function(event){
         event.preventDefault();
         thisProduct.processOrder();
       });
@@ -210,10 +210,10 @@ const select = {
     // check if the option is default
     if(option.default == true) {
       // reduce price variable
-      price -= option.price
+      price -= option.price;
     }
   }
-  const optionImage = thisProduct.imageWrapper.querySelector('.' + paramId + '-' + optionId);
+  const optionImage = thisProduct.dom.imageWrapper.querySelector('.' + paramId + '-' + optionId);
   if (optionImage) {
     if (optionSelected) {
       optionImage.classList.add(classNames.menuProduct.imageVisible);
@@ -228,14 +228,14 @@ const select = {
   price *= thisProduct.amountWidget.value
 
   // update calculated price in the HTML
-  thisProduct.priceElem.innerHTML = price;
+  thisProduct.dom.priceElem.innerHTML = price;
 }
 
 initAmountWidget(){
   const thisProduct = this;
 
-  thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);
-  thisProduct.amountWidgetElem.addEventListener('updated', function(){
+  thisProduct.amountWidget = new AmountWidget(thisProduct.dom.amountWidgetElem);
+  thisProduct.dom.amountWidgetElem.addEventListener('updated', function(){
     thisProduct.processOrder();
   } )
 }
@@ -311,6 +311,7 @@ class Cart{
     thisCart.products = [];
     
     thisCart.getElements(element);
+    thisCart.initActions();
 
     console.log('new Cart', thisCart)
   }
@@ -321,6 +322,17 @@ class Cart{
     thisCart.dom = {};
 
     thisCart.dom.wrapper = element
+    thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(select.cart.toggleTrigger);
+  }
+
+  initActions(){
+    const thisCart = this;
+
+    thisCart.dom.toggleTrigger.addEventListener('click', function(event){
+      event.preventDefault();
+      thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive)
+    })
+
   }
 }
 
@@ -340,6 +352,13 @@ class Cart{
       thisApp.data = dataSource;
     },
 
+    initCart: function(){
+      const thisApp = this;
+
+      const cartElem = document.querySelector(select.containerOf.cart)
+      thisApp.cart = new Cart(cartElem)
+    },
+
     init: function(){
       const thisApp = this;
       console.log('*** App starting ***');
@@ -350,6 +369,7 @@ class Cart{
       
       thisApp.initData();
       thisApp.initMenu();
+      thisApp.initCart();
     },
   };
 
